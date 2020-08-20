@@ -96,7 +96,7 @@ final class ReceiptParsingTest extends TestCase
      */
     public function testShopParsing(): void
     {
-        $receipt = REWEParser\Parser::parseFromPDF(dirname(__FILE__) . '/receipts/negative_amount.pdf', '/usr/local/bin/pdftotext');
+        $receipt = REWEParser\Parser::parseFromPDF(dirname(__FILE__) . '/receipts/negative_amount.pdf');
         $shop = $receipt->getShop();
 
         $this->assertInstanceOf(\REWEParser\Shop::class, $shop);
