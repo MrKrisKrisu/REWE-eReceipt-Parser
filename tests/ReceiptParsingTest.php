@@ -11,6 +11,8 @@ final class ReceiptParsingTest extends TestCase
 
     /**
      * @return void
+     * @throws \REWEParser\Exception\ReceiptParseException
+     * @throws \Spatie\PdfToText\Exceptions\PdfNotFound
      */
     public function testNegativeTotalAmount(): void
     {
@@ -20,6 +22,8 @@ final class ReceiptParsingTest extends TestCase
 
     /**
      * @return void
+     * @throws \REWEParser\Exception\ReceiptParseException
+     * @throws \Spatie\PdfToText\Exceptions\PdfNotFound
      */
     public function testBonParsingWeight(): void
     {
@@ -56,6 +60,8 @@ final class ReceiptParsingTest extends TestCase
 
     /**
      * @return void
+     * @throws \REWEParser\Exception\ReceiptParseException
+     * @throws \Spatie\PdfToText\Exceptions\PdfNotFound
      */
     public function testBonParsingPaymentMethods(): void
     {
@@ -83,5 +89,21 @@ final class ReceiptParsingTest extends TestCase
         $this->assertEquals(0.69, $positions['SCHOKOLADE']['price_single']);
         $this->assertEquals(1.38, $positions['SCHOKOLADE']['price_total']);
         $this->assertEquals(0.53, $positions['SCHMAND 24%']['price_single']);
+    }
+
+    /**
+     * @throws \Spatie\PdfToText\Exceptions\PdfNotFound
+     */
+    public function testShopParsing(): void
+    {
+        $receipt = REWEParser\Parser::parseFromPDF(dirname(__FILE__) . '/receipts/negative_amount.pdf', '/usr/local/bin/pdftotext');
+        $shop = $receipt->getShop();
+
+        $this->assertInstanceOf(\REWEParser\Shop::class, $shop);
+
+        $this->assertEquals("REWE Mustermann oHG", $shop->getName());
+        $this->assertEquals("Muster-Str. 1", $shop->getAddress());
+        $this->assertEquals("12345", $shop->getPostalCode());
+        $this->assertEquals("Musterstadt", $shop->getCity());
     }
 }

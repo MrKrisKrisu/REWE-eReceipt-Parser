@@ -48,19 +48,14 @@ class Receipt
     }
 
     /**
-     * @return array
+     * @return Shop
      */
-    public function getShop(): array
+    public function getShop(): Shop
     {
         $rawPos = explode("\n", $this->raw_receipt);
         $address_part = array_slice($rawPos, 0, 5);
         preg_match('/(\d{5}) (.*)/', implode("\n", $address_part), $zip_city);
-        return [
-            'name' => trim($address_part[0]),
-            'address' => trim($address_part[1]),
-            'zip' => trim($zip_city[1]),
-            'city' => trim($zip_city[2])
-        ];
+        return new Shop(trim($address_part[0]), trim($address_part[1]), trim($zip_city[1]), trim($zip_city[2]));
     }
 
     /**
