@@ -2,6 +2,7 @@
   "name": "mrkriskrisu/rewe-ereceipt-parser",
   "description": "Library for parsing digital receipts from REWE (supermarket)",
   "type": "library",
+  "license": "GPL-3.0-only",
   "authors": [
     {
       "name": "MrKrisKrisu",
