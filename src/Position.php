@@ -92,12 +92,12 @@ class Position
         $this->name = $name;
     }
 
-    public function setPriceTotal(string $priceTotal)
+    public function setPriceTotal(float $priceTotal)
     {
         $this->priceTotal = $priceTotal;
     }
 
-    public function setPriceSingle(string $priceSingle)
+    public function setPriceSingle(float $priceSingle)
     {
         $this->priceSingle = $priceSingle;
     }
@@ -107,12 +107,12 @@ class Position
         $this->taxCode = $taxCode;
     }
 
-    public function setWeight(string $weight)
+    public function setWeight(float $weight)
     {
         $this->weight = $weight;
     }
 
-    public function setAmount(string $amount)
+    public function setAmount(int $amount)
     {
         $this->amount = $amount;
     }
