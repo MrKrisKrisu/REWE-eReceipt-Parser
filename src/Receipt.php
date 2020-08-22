@@ -3,15 +3,18 @@
 namespace REWEParser;
 
 use Carbon\Carbon;
+use REWEParser\Exception\PositionNotFoundException;
 use REWEParser\Exception\ReceiptParseException;
 
 class Receipt
 {
     private $raw_receipt;
+    private $expl_receipt;
 
     function __construct(string $raw_receipt)
     {
         $this->raw_receipt = $raw_receipt;
+        $this->expl_receipt = explode("\n", $raw_receipt);
     }
 
     /**
@@ -150,6 +153,20 @@ class Receipt
     }
 
     /**
+     * @param string $name
+     * @return Position
+     * @throws PositionNotFoundException|ReceiptParseException
+     */
+    public function getPositionByName(string $name): Position
+    {
+        foreach ($this->getPositions() as $position) {
+            if ($position->getName() == $name)
+                return $position;
+        }
+        throw new PositionNotFoundException("Position '$name' not found");
+    }
+
+    /**
      * @return array
      * @throws ReceiptParseException
      */
@@ -157,74 +174,67 @@ class Receipt
     {
         $positions = [];
 
-        $startLine = $this->getProductStartLine();
-        $endLine = $this->getProductEndLine();
-
         $rawPos = explode("\n", $this->raw_receipt);
-        $lastPos = NULL;
+        $lastPosition = NULL;
 
-        for ($lineNr = $startLine; $lineNr <= $endLine; $lineNr++) {
+        for ($lineNr = $this->getProductStartLine(); $lineNr <= $this->getProductEndLine(); $lineNr++) {
             $line = trim($rawPos[$lineNr]);
 
-            if (strpos($line, ' Stk x') !== false && $lastPos != NULL) {
+            if ($this->isProductLine($lineNr)) {
 
-                if (preg_match('/(-?\d{1,}) Stk x *(-?\d{1,},\d{2})/', $line, $match)) {
-                    $lastPos['amount'] = (int)$match[1];
-                    $lastPos['price_single'] = (float)str_replace(',', '.', $match[2]);
+                if ($lastPosition !== NULL) {
+                    $positions[] = $lastPosition;
+                    $lastPosition = NULL;
                 }
-
-            } else if (strpos($line, 'kg') !== false && $lastPos != NULL) {
-
-                if (preg_match('/(-?\d{1,},\d{3}) kg x *(-?\d{1,},\d{2}) EUR/', $line, $match)) {
-                    $lastPos['weight'] = (float)str_replace(',', '.', $match[1]);
-                    $lastPos['price_single'] = (float)str_replace(',', '.', $match[2]);
-                } else if (preg_match('/Handeingabe E-Bon *(-?\d{1,},\d{3}) kg/', $line, $match)) {
-                    $lastPos['weight'] = (float)str_replace(',', '.', $match[1]);
-                }
-
-            } else {
-                if ($lastPos != NULL && isset($lastPos['name']) && isset($lastPos['price_total'])) {
-                    if (!isset($lastPos['price_single']) && isset($lastPos['weight']))
-                        $lastPos['price_single'] = $lastPos['price_total'] / $lastPos['weight'];
-                    if (!isset($lastPos['price_single']) && isset($lastPos['amount']))
-                        $lastPos['price_single'] = $lastPos['price_total'] / $lastPos['amount'];
-                    if (!isset($lastPos['price_single'])) {
-                        $lastPos['price_single'] = $lastPos['price_total'];
-                        $lastPos['amount'] = 1;
-                    }
-
-                    $positions[] = $lastPos;
-                    $lastPos = NULL;
-                }
-
 
                 if (preg_match('/(.*)  (-?\d{1,},\d{2}) (.{1})/', $line, $match)) {
-                    $lastPos = [
-                        'name' => trim($match[1]),
-                        'price_total' => (float)str_replace(',', '.', $match[2]),
-                        'tax_code' => $match[3]
-                    ];
-                }
+                    $lastPosition = new Position();
+                    $lastPosition->setName(trim($match[1]));
+                    $lastPosition->setPriceTotal((float)str_replace(',', '.', $match[2]));
+                    $lastPosition->setTaxCode($match[3]);
+                } else throw new ReceiptParseException("Error while parsing Product line");
 
-            }
+            } else if ($this->isAmountLine($lineNr)) {
+
+                if (preg_match('/(-?\d{1,}) Stk x *(-?\d{1,},\d{2})/', $line, $match)) {
+                    $lastPosition->setAmount((int)$match[1]);
+                    $lastPosition->setPriceSingle((float)str_replace(',', '.', $match[2]));
+                } else throw new ReceiptParseException("Error while parsing Amount line");
+
+            } else if ($this->isWeightLine($lineNr)) {
+
+                if (preg_match('/(-?\d{1,},\d{3}) kg x *(-?\d{1,},\d{2}) EUR/', $line, $match)) {
+                    $lastPosition->setWeight((float)str_replace(',', '.', $match[1]));
+                    $lastPosition->setPriceSingle((float)str_replace(',', '.', $match[2]));
+                } else if (preg_match('/Handeingabe E-Bon *(-?\d{1,},\d{3}) kg/', $line, $match)) {
+                    $lastPosition->setWeight((float)str_replace(',', '.', $match[1]));
+                } else throw new ReceiptParseException("Error while parsing Weight line");
+
+            } else throw new ReceiptParseException("Error while parsing unknown receipt line");
+
         }
 
-        if ($lastPos != NULL && isset($lastPos['name']) && isset($lastPos['price_total'])) {
-            if (!isset($lastPos['price_single']) && isset($lastPos['weight']))
-                $lastPos['price_single'] = $lastPos['price_total'] / $lastPos['weight'];
-            if (!isset($lastPos['price_single']) && isset($lastPos['amount']))
-                $lastPos['price_single'] = $lastPos['price_total'] / $lastPos['amount'];
-            if (!isset($lastPos['price_single'])) {
-                $lastPos['price_single'] = $lastPos['price_total'];
-                $lastPos['amount'] = 1;
-            }
-            $positions[] = $lastPos;
-            $lastPos = NULL;
-        }
+        if ($lastPosition !== NULL)
+            $positions[] = $lastPosition;
 
         if (count($positions) == 0)
-            throw new ReceiptParseException();
+            throw new ReceiptParseException("Cannot parse any products on receipt");
 
         return $positions;
+    }
+
+    private function isWeightLine($lineNr)
+    {
+        return strpos($this->expl_receipt[$lineNr], 'kg') !== false;
+    }
+
+    private function isAmountLine($lineNr)
+    {
+        return strpos($this->expl_receipt[$lineNr], ' Stk x') !== false;
+    }
+
+    private function isProductLine($lineNr)
+    {
+        return !$this->isWeightLine($lineNr) && !$this->isAmountLine($lineNr);
     }
 }

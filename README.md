@@ -9,7 +9,7 @@ $ composer require mrkriskrisu/rewe-ereceipt-parser
 ```json
 {
     "require": {
-        "mrkriskrisu/rewe-ereceipt-parser": "^0.1"
+        "mrkriskrisu/rewe-ereceipt-parser": "^0.3"
     }
 }
 ```
