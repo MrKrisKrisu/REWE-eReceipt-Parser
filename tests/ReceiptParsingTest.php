@@ -37,6 +37,8 @@ final class ReceiptParsingTest extends TestCase
         $this->assertEquals(2, $receipt->getCashregisterNr());
         $this->assertEquals(5, $receipt->getEarnedPaybackPoints());
         $this->assertContains("EC-Cash", $receipt->getPaymentMethods());
+        $this->assertTrue( $receipt->hasPayedCashless());
+        $this->assertTrue( $receipt->hasPayedContactless());
         $this->assertEquals(1577880000, $receipt->getTimestamp()->getTimestamp());
         $this->assertEquals(1, $receipt->getPositionByName('BROT')->getPriceSingle());
         $this->assertEquals(0.5, $receipt->getPositionByName('AUFSCHNITT')->getPriceSingle());
@@ -72,6 +74,8 @@ final class ReceiptParsingTest extends TestCase
         $this->assertEquals(22, $receipt->getEarnedPaybackPoints());
         $this->assertContains("BAR", $receipt->getPaymentMethods());
         $this->assertContains("VISA", $receipt->getPaymentMethods());
+        $this->assertTrue($receipt->hasPayedCashless());
+        $this->assertFalse($receipt->hasPayedContactless());
         $this->assertEquals(1577880000, $receipt->getTimestamp()->getTimestamp());
 
         $this->assertEquals(0.25, $receipt->getPositionByName('LEERGUT')->getPriceSingle());
