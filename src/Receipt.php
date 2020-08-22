@@ -23,7 +23,7 @@ class Receipt
      */
     public function getTotal(): float
     {
-        if (preg_match('/SUMME *EUR *(-?[0-9]{1,},[0-9]{2})/', $this->raw_receipt, $match))
+        if (preg_match('/SUMME *EUR *(-?\d+,\d{2})/', $this->raw_receipt, $match))
             return (float)str_replace(',', '.', $match[1]);
         throw new ReceiptParseException();
     }
@@ -34,7 +34,7 @@ class Receipt
      */
     public function getBonNr(): int
     {
-        if (preg_match('/Bon-Nr.:([0-9]{1,4})/', $this->raw_receipt, $match))
+        if (preg_match('/Bon-Nr.:(\d{1,4})/', $this->raw_receipt, $match))
             return (int)$match[1];
         throw new ReceiptParseException();
     }
@@ -45,7 +45,7 @@ class Receipt
      */
     public function getShopNr(): int
     {
-        if (preg_match('/Markt:([0-9]{1,4})/', $this->raw_receipt, $match))
+        if (preg_match('/Markt:(\d{1,4})/', $this->raw_receipt, $match))
             return (int)$match[1];
         throw new ReceiptParseException();
     }
@@ -67,7 +67,7 @@ class Receipt
      */
     public function getCashierNr(): int
     {
-        if (preg_match('/Bed.: ?([0-9]{4,6})/', $this->raw_receipt, $match))
+        if (preg_match('/Bed.: ?(\d{4,6})/', $this->raw_receipt, $match))
             return (int)$match[1];
         throw new ReceiptParseException();
     }
@@ -78,7 +78,7 @@ class Receipt
      */
     public function getCashregisterNr(): int
     {
-        if (preg_match('/Kasse:([0-9]{1,6})/', $this->raw_receipt, $match))
+        if (preg_match('/Kasse:(\d{1,6})/', $this->raw_receipt, $match))
             return (int)$match[1];
         throw new ReceiptParseException();
     }
@@ -88,7 +88,7 @@ class Receipt
      */
     public function getEarnedPaybackPoints(): int
     {
-        if (preg_match('/Sie erhalten ([0-9]{1,}) PAYBACK Punkt/', $this->raw_receipt, $match))
+        if (preg_match('/Sie erhalten (\d+) PAYBACK Punkt/', $this->raw_receipt, $match))
             return (int)$match[1];
         return 0;
     }
@@ -104,7 +104,7 @@ class Receipt
         foreach (explode("\n", $this->raw_receipt) as $line)
             if (preg_match('/Geg. (.*) *EUR/', $line, $match))
                 $paymentMethods[] = trim($match[1]);
-            else if (preg_match('/BAR *EUR *-\d{1,},\d{2}/', $line, $match))
+            else if (preg_match('/BAR *EUR *-\d+,\d{2}/', $line, $match))
                 $paymentMethods[] = "BAR";
         return $paymentMethods;
     }
@@ -183,7 +183,7 @@ class Receipt
                     $lastPosition = NULL;
                 }
 
-                if (preg_match('/(.*)  (-?\d{1,},\d{2}) (.{1})/', $this->expl_receipt[$lineNr], $match)) {
+                if (preg_match('/(.*)  (-?\d+,\d{2}) (.{1})/', $this->expl_receipt[$lineNr], $match)) {
                     $lastPosition = new Position();
                     $lastPosition->setName(trim($match[1]));
                     $lastPosition->setPriceTotal((float)str_replace(',', '.', $match[2]));
@@ -192,17 +192,17 @@ class Receipt
 
             } else if ($this->isAmountLine($lineNr)) {
 
-                if (preg_match('/(-?\d{1,}) Stk x *(-?\d{1,},\d{2})/', $this->expl_receipt[$lineNr], $match)) {
+                if (preg_match('/(-?\d+) Stk x *(-?\d+,\d{2})/', $this->expl_receipt[$lineNr], $match)) {
                     $lastPosition->setAmount((int)$match[1]);
                     $lastPosition->setPriceSingle((float)str_replace(',', '.', $match[2]));
                 } else throw new ReceiptParseException("Error while parsing Amount line");
 
             } else if ($this->isWeightLine($lineNr)) {
 
-                if (preg_match('/(-?\d{1,},\d{3}) kg x *(-?\d{1,},\d{2}) EUR/', $this->expl_receipt[$lineNr], $match)) {
+                if (preg_match('/(-?\d+,\d{3}) kg x *(-?\d+,\d{2}) EUR/', $this->expl_receipt[$lineNr], $match)) {
                     $lastPosition->setWeight((float)str_replace(',', '.', $match[1]));
                     $lastPosition->setPriceSingle((float)str_replace(',', '.', $match[2]));
-                } else if (preg_match('/Handeingabe E-Bon *(-?\d{1,},\d{3}) kg/', $this->expl_receipt[$lineNr], $match)) {
+                } else if (preg_match('/Handeingabe E-Bon *(-?\d+,\d{3}) kg/', $this->expl_receipt[$lineNr], $match)) {
                     $lastPosition->setWeight((float)str_replace(',', '.', $match[1]));
                 } else throw new ReceiptParseException("Error while parsing Weight line");
 
