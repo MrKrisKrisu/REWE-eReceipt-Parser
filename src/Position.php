@@ -82,6 +82,8 @@ class Position
      */
     public function getAmount()
     {
+        if ($this->amount === NULL && $this->weight === NULL)
+            return 1;
         return $this->amount;
     }
 
