@@ -79,6 +79,7 @@ final class ReceiptParsingTest extends TestCase
         $this->assertEquals(1.49, $receipt->getPositionByName('NUDELN')->getPriceSingle());
         $this->assertEquals(0.49, $receipt->getPositionByName('QUARK')->getPriceSingle());
         $this->assertEquals(1.99, $receipt->getPositionByName('SÜßIGKEITEN')->getPriceSingle());
+        $this->assertEquals(2, $receipt->getPositionByName('SCHOKOLADE')->getAmount());
         $this->assertEquals(0.69, $receipt->getPositionByName('SCHOKOLADE')->getPriceSingle());
         $this->assertEquals(1.38, $receipt->getPositionByName('SCHOKOLADE')->getPriceTotal());
         $this->assertEquals(0.53, $receipt->getPositionByName('SCHMAND 24%')->getPriceSingle());
