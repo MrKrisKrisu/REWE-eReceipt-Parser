@@ -112,8 +112,7 @@ class Receipt
     public function hasPayedCashless(): bool
     {
         return preg_match('/Kartenzahlung/', $this->raw_receipt) ||
-            //the following line is just for old receipts which doesn't have "Kartenzahlung" in it
-            (preg_match('/Bezahlung/', $this->raw_receipt) && preg_match('/(VISA|MasterCard|American Express|JCB)/', $this->raw_receipt));
+            (preg_match('/Bezahlung/', $this->raw_receipt) && preg_match('/(visa|mastercard|american express)/', strtolower($this->raw_receipt)));
     }
 
     public function hasPayedContactless(): bool
