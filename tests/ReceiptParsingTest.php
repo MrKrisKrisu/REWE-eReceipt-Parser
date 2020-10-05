@@ -1,34 +1,40 @@
 <?php declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
+use REWEParser\Exception\PositionNotFoundException;
+use REWEParser\Exception\ReceiptParseException;
+use REWEParser\Parser;
+use REWEParser\Receipt;
+use REWEParser\Shop;
+use Spatie\PdfToText\Exceptions\PdfNotFound;
 
 final class ReceiptParsingTest extends TestCase
 {
     public function testCanBeCreatedFromValidEmailAddress(): void
     {
-        $this->assertInstanceOf(\REWEParser\Receipt::class, \REWEParser\Parser::parseFromText("xxx"));
+        $this->assertInstanceOf(Receipt::class, Parser::parseFromText("xxx"));
     }
 
     /**
      * @return void
-     * @throws \REWEParser\Exception\ReceiptParseException
-     * @throws \Spatie\PdfToText\Exceptions\PdfNotFound
+     * @throws ReceiptParseException
+     * @throws PdfNotFound
      */
     public function testNegativeTotalAmount(): void
     {
-        $receipt = REWEParser\Parser::parseFromPDF(dirname(__FILE__) . '/receipts/negative_amount.pdf');
+        $receipt = Parser::parseFromPDF(dirname(__FILE__) . '/receipts/negative_amount.pdf');
         $this->assertEquals(-0.25, $receipt->getTotal());
     }
 
     /**
      * @return void
-     * @throws \REWEParser\Exception\ReceiptParseException
-     * @throws \REWEParser\Exception\PositionNotFoundException
-     * @throws \Spatie\PdfToText\Exceptions\PdfNotFound
+     * @throws ReceiptParseException
+     * @throws PositionNotFoundException
+     * @throws PdfNotFound
      */
     public function testBonParsingWeight(): void
     {
-        $receipt = REWEParser\Parser::parseFromPDF(dirname(__FILE__) . '/receipts/weight_eccash.pdf');
+        $receipt = Parser::parseFromPDF(dirname(__FILE__) . '/receipts/weight_eccash.pdf');
 
         $this->assertEquals(11.0, $receipt->getTotal());
         $this->assertEquals(1234, $receipt->getBonNr());
@@ -61,13 +67,13 @@ final class ReceiptParsingTest extends TestCase
 
     /**
      * @return void
-     * @throws \REWEParser\Exception\ReceiptParseException
-     * @throws \Spatie\PdfToText\Exceptions\PdfNotFound
-     * @throws \REWEParser\Exception\PositionNotFoundException
+     * @throws ReceiptParseException
+     * @throws PdfNotFound
+     * @throws PositionNotFoundException
      */
     public function testBonParsingPaymentMethods(): void
     {
-        $receipt = REWEParser\Parser::parseFromPDF(dirname(__FILE__) . '/receipts/multipleProducts_multiplePaymentMethods_paybackCoupon.pdf');
+        $receipt = Parser::parseFromPDF(dirname(__FILE__) . '/receipts/multipleProducts_multiplePaymentMethods_paybackCoupon.pdf');
 
         $this->assertEquals(8.62, $receipt->getTotal());
         $this->assertEquals(9999, $receipt->getBonNr());
@@ -93,14 +99,14 @@ final class ReceiptParsingTest extends TestCase
     }
 
     /**
-     * @throws \Spatie\PdfToText\Exceptions\PdfNotFound
+     * @throws PdfNotFound
      */
     public function testShopParsing(): void
     {
-        $receipt = REWEParser\Parser::parseFromPDF(dirname(__FILE__) . '/receipts/negative_amount.pdf');
+        $receipt = Parser::parseFromPDF(dirname(__FILE__) . '/receipts/negative_amount.pdf');
         $shop = $receipt->getShop();
 
-        $this->assertInstanceOf(\REWEParser\Shop::class, $shop);
+        $this->assertInstanceOf(Shop::class, $shop);
 
         $this->assertEquals("REWE Mustermann oHG", $shop->getName());
         $this->assertEquals("Muster-Str. 1", $shop->getAddress());

@@ -1,17 +1,12 @@
 # REWE eReceipt Parser
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/6bbb1a99e88f4df198db20314bb42bf5)](https://www.codacy.com/gh/MrKrisKrisu/REWE-eReceipt-Parser/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=MrKrisKrisu/REWE-eReceipt-Parser&amp;utm_campaign=Badge_Grade)
+![PHPUnit](https://github.com/MrKrisKrisu/REWE-eReceipt-Parser/workflows/PHP%20Composer/badge.svg)
+
 ## Installation
 
 ```
 $ composer require mrkriskrisu/rewe-ereceipt-parser
-```
-
-```json
-{
-    "require": {
-        "mrkriskrisu/rewe-ereceipt-parser": "^0.3"
-    }
-}
 ```
 
 ## Example Usage

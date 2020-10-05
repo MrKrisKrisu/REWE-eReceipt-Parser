@@ -96,6 +96,7 @@ class Receipt
     /**
      * It's possible to pay with multiple Payment methods at REWE, so this function will return an array.
      * You can for example pay with Cash, then with Coupon and with Card.
+     *
      * @return array
      */
     public function getPaymentMethods(): array
@@ -125,15 +126,15 @@ class Receipt
      */
     public function getTimestamp(): Carbon
     {
-        $dateRaw = NULL;
-        $timeRaw = NULL;
+        $dateRaw = null;
+        $timeRaw = null;
 
         if (preg_match('/(\d{2}\.\d{2}\.\d{4})/', $this->raw_receipt, $match))
             $dateRaw = $match[1];
 
         if (preg_match('/(\d{2}:\d{2}:\d{2}) Uhr/', $this->raw_receipt, $match)) {
             $timeRaw = $match[1];
-        } elseif (preg_match('/(\d{2}:\d{2})/', $this->raw_receipt, $match)) { //very unprecise...
+        } else if (preg_match('/(\d{2}:\d{2})/', $this->raw_receipt, $match)) { //very unprecise...
             $timeRaw = $match[1];
         }
         return Carbon::parse($dateRaw . ' ' . $timeRaw);
@@ -184,14 +185,14 @@ class Receipt
     public function getPositions(): array
     {
         $positions = [];
-        $lastPosition = NULL;
+        $lastPosition = null;
 
         for ($lineNr = $this->getProductStartLine(); $lineNr <= $this->getProductEndLine(); $lineNr++) {
             if ($this->isProductLine($lineNr)) {
 
-                if ($lastPosition !== NULL) {
+                if ($lastPosition !== null) {
                     $positions[] = $lastPosition;
-                    $lastPosition = NULL;
+                    $lastPosition = null;
                 }
 
                 if (preg_match('/(.*)  (-?\d+,\d{2}) (.{1})/', $this->expl_receipt[$lineNr], $match)) {
@@ -221,7 +222,7 @@ class Receipt
 
         }
 
-        if ($lastPosition !== NULL)
+        if ($lastPosition !== null)
             $positions[] = $lastPosition;
 
         if (count($positions) == 0)
