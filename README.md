@@ -9,14 +9,6 @@
 $ composer require mrkriskrisu/rewe-ereceipt-parser
 ```
 
-```json
-{
-    "require": {
-        "mrkriskrisu/rewe-ereceipt-parser": "^0.3"
-    }
-}
-```
-
 ## Example Usage
 ```php
 <?php
