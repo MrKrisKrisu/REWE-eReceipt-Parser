@@ -10,7 +10,7 @@ class Shop
     private $postalCode;
     private $city;
 
-    public function __construct(string $name = NULL, string $address = NULL, string $postalCode = NULL, string $city = NULL)
+    public function __construct(string $name = null, string $address = null, string $postalCode = null, string $city = null)
     {
         $this->name = $name;
         $this->address = $address;

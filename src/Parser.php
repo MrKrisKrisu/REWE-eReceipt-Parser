@@ -2,17 +2,18 @@
 
 namespace REWEParser;
 
+use Spatie\PdfToText\Exceptions\PdfNotFound;
 use Spatie\PdfToText\Pdf;
 
 class Parser
 {
     /**
-     * @param string $path The path to the pdf receipt that should be parsed
-     * @param string $path_pdfToText Optionally the path to the pdftotext command if not default
+     * @param string      $path           The path to the pdf receipt that should be parsed
+     * @param string|null $path_pdfToText Optionally the path to the pdftotext command if not default
      * @return Receipt
-     * @throws \Spatie\PdfToText\Exceptions\PdfNotFound
+     * @throws PdfNotFound
      */
-    public static function parseFromPDF(string $path, string $path_pdfToText = NULL): Receipt
+    public static function parseFromPDF(string $path, string $path_pdfToText = null): Receipt
     {
         $pdf = new Pdf($path_pdfToText);
         $text = $pdf->setPdf($path)->setOptions(['layout'])->text();
