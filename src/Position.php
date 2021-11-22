@@ -4,8 +4,7 @@ namespace REWEParser;
 
 use REWEParser\Exception\ReceiptParseException;
 
-class Position
-{
+class Position {
 
     private $name;
     private $priceTotal;
@@ -20,8 +19,7 @@ class Position
      *
      * @return string|NULL
      */
-    public function getName()
-    {
+    public function getName(): ?string {
         return $this->name;
     }
 
@@ -31,14 +29,16 @@ class Position
      * @return float
      * @throws ReceiptParseException
      */
-    public function getPriceTotal()
-    {
-        if ($this->priceTotal !== null)
+    public function getPriceTotal(): float {
+        if($this->priceTotal !== null) {
             return $this->priceTotal;
-        if ($this->priceSingle !== null && $this->amount !== null)
+        }
+        if($this->priceSingle !== null && $this->amount !== null) {
             return $this->priceSingle * $this->amount;
-        if ($this->priceSingle !== null && $this->weight !== null)
+        }
+        if($this->priceSingle !== null && $this->weight !== null) {
             return $this->priceSingle * $this->weight;
+        }
         throw new ReceiptParseException();
     }
 
@@ -48,16 +48,19 @@ class Position
      * @return float
      * @throws ReceiptParseException
      */
-    public function getPriceSingle()
-    {
-        if ($this->priceSingle !== null)
+    public function getPriceSingle(): float {
+        if($this->priceSingle !== null) {
             return $this->priceSingle;
-        if ($this->priceTotal !== null && $this->amount !== null)
+        }
+        if($this->priceTotal !== null && $this->amount !== null) {
             return $this->priceTotal / $this->amount;
-        if ($this->priceTotal !== null && $this->weight !== null)
+        }
+        if($this->priceTotal !== null && $this->weight !== null) {
             return $this->priceTotal / $this->weight;
-        if ($this->priceTotal !== null)
+        }
+        if($this->priceTotal !== null) {
             return $this->priceTotal;
+        }
         throw new ReceiptParseException();
     }
 
@@ -66,8 +69,7 @@ class Position
      *
      * @return string|NULL
      */
-    public function getTaxCode()
-    {
+    public function getTaxCode(): ?string {
         return $this->taxCode;
     }
 
@@ -76,8 +78,7 @@ class Position
      *
      * @return float|NULL
      */
-    public function getWeight()
-    {
+    public function getWeight(): ?float {
         return $this->weight;
     }
 
@@ -86,40 +87,34 @@ class Position
      *
      * @return int|NULL
      */
-    public function getAmount()
-    {
-        if ($this->amount === null && $this->weight === null)
+    public function getAmount(): ?int {
+        if($this->amount === null && $this->weight === null) {
             return 1;
+        }
         return $this->amount;
     }
 
-    public function setName(string $name)
-    {
+    public function setName(string $name): void {
         $this->name = $name;
     }
 
-    public function setPriceTotal(float $priceTotal)
-    {
+    public function setPriceTotal(float $priceTotal): void {
         $this->priceTotal = $priceTotal;
     }
 
-    public function setPriceSingle(float $priceSingle)
-    {
+    public function setPriceSingle(float $priceSingle): void {
         $this->priceSingle = $priceSingle;
     }
 
-    public function setTaxCode(string $taxCode)
-    {
+    public function setTaxCode(string $taxCode): void {
         $this->taxCode = $taxCode;
     }
 
-    public function setWeight(float $weight)
-    {
+    public function setWeight(float $weight): void {
         $this->weight = $weight;
     }
 
-    public function setAmount(int $amount)
-    {
+    public function setAmount(int $amount): void {
         $this->amount = $amount;
     }
 

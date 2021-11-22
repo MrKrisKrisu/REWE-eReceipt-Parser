@@ -2,7 +2,8 @@
 
 namespace REWEParser\Exception;
 
-class PositionNotFoundException extends \Exception
-{
+use Exception;
+
+class PositionNotFoundException extends Exception {
 
 }

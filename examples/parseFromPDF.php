@@ -12,9 +12,9 @@ try {
     echo "The receipt was made " . $receipt->getTimestamp()->diffForHumans() . ". \n";
     echo "You've bought " . count($receipt->getPositions()) . " Products for a total of " . $receipt->getTotal() . "€. \n";
 
-} catch (ReceiptParseException $e) {
+} catch(ReceiptParseException $e) {
     echo "There is something weird with the receipt... Maybe it's not compatible?\n";
     echo "Error: " . $e->getMessage();
-} catch (PdfNotFound $e) {
+} catch(PdfNotFound $e) {
     echo "The given PDF File cannot be opened... " . $e->getMessage();
 }

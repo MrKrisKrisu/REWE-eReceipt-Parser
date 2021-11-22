@@ -2,7 +2,8 @@
 
 namespace REWEParser\Exception;
 
-class ReceiptParseException extends \Exception
-{
+use Exception;
+
+class ReceiptParseException extends Exception {
 
 }
