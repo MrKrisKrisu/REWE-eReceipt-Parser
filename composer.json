@@ -5,12 +5,12 @@
   "license": "MIT",
   "authors": [
     {
-      "name": "MrKrisKrisu",
+      "name": "Kristian Stöckel",
       "email": "git@k118.de"
     }
   ],
   "require": {
-    "php": "^7.3 || ^8.0",
+    "php": "^7.4 || ^8.0",
     "spatie/pdf-to-text": "^1.3",
     "nesbot/carbon": "^2.38"
   },
