@@ -56,7 +56,12 @@ class Receipt {
         $rawPos       = explode("\n", $this->raw_receipt);
         $address_part = array_slice($rawPos, 0, 5);
         preg_match('/(\d{5}) (.*)/', implode("\n", $address_part), $zip_city);
-        return new Shop(trim($address_part[0]), trim($address_part[1]), trim($zip_city[1]), trim($zip_city[2]));
+        return new Shop(
+            trim($address_part[0] ?? null),
+            trim($address_part[1] ?? null),
+            trim($zip_city[1] ?? null),
+            trim($zip_city[2] ?? null),
+        );
     }
 
     /**
