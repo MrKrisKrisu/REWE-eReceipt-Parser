@@ -193,7 +193,6 @@ class Receipt {
 
         for($lineNr = $this->getProductStartLine(); $lineNr <= $this->getProductEndLine(); $lineNr++) {
             if($this->isProductLine($lineNr)) {
-
                 if($lastPosition !== null) {
                     $positions[]  = $lastPosition;
                     $lastPosition = null;
@@ -204,6 +203,10 @@ class Receipt {
                     $lastPosition->setName(trim($match[1]));
                     $lastPosition->setPriceTotal((float)str_replace(',', '.', $match[2]));
                     $lastPosition->setTaxCode($match[3]);
+                } elseif(preg_match('/     (\d{5,})/', $this->expl_receipt[$lineNr], $match)) {
+                    //This is a line with a coupon code or something similar.
+                    //Should be skipped.
+                    continue;
                 } else {
                     throw new ReceiptParseException("Error while parsing Product line");
                 }
@@ -231,7 +234,6 @@ class Receipt {
             } else {
                 throw new ReceiptParseException("Error while parsing unknown receipt line");
             }
-
         }
 
         if($lastPosition !== null) {
