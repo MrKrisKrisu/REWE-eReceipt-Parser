@@ -24,6 +24,13 @@ final class ReceiptParsingTest extends TestCase {
         $this->assertEquals(-0.25, $receipt->getTotal());
     }
 
+    public function testReceiptWithCouponLine(): void {
+        $receipt = Parser::parseFromText(file_get_contents(__DIR__ . '/receipts/coupon.txt'));
+        $this->assertCount(1, $receipt->getPositions());
+        $this->assertEquals('GUTSCHEINW50              V300', $receipt->getPositions()[0]->getName());
+        //TODO: Name is still a bug. See issue #1
+    }
+
     /**
      * @return void
      * @throws ReceiptParseException

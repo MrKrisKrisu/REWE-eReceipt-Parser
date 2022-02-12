@@ -1,0 +1,45 @@
+REWE
+             Musterstr. 1
+                12345 Musterstadt
+            UID Nr.: DE000000000
+                                   EUR
+GUTSCHEINW50              V300  50,00 C *
+             0000000123456789
+ --------------------------------------
+ SUMME                    EUR   50,00
+ ======================================
+ Geg. BAR                 EUR    50,00
+ Steuer %           Netto        Steuer        Brutto
+ Gesamtbetrag       50,00          0,00         50,00
+
+                Konzessionär:     V300
+ C=   0,0%         50,00           0,00       50,00
+ Gesamtbetrag      50,00           0,00       50,00
+
+        TSE-Signaturzähler: 789456
+        TSE-Transaktion:     123456
+    TSE-Start:           2022-01-01T12:12:00.000
+
+   TSE-Stop:            2022-01-01T12:12:59.000
+   Seriennnummer Kasse: REWE:00:00:00:00:00:00:00
+  01.01.2022     12:34     Bon-Nr.:2345
+  Markt:1234     Kasse:1   Bed.:121212
+ ****************************************
+
+      Ihre REWE PAYBACK Vorteile heute
+     PAYBACK Karten-Nr.: #########1234
+      Punktestand vor Einkauf: 5000
+    Punktestand entspricht: 50,00 EUR
+
+   Sie erhalten 500000000 PAYBACK Punkte auf
+   einen PAYBACK Umsatz von 50,00 EUR!
+
+ Für die mit * gekennzeichneten Produkte
+     erhalten Sie leider keine Rabatte
+              oder PAYBACK Punkte.
+
+
+               REWE Markt GmbH
+
+           Sie haben Fragen?
+  Antworten gibt es unter www.rewe.de
