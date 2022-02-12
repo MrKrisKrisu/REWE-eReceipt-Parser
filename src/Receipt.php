@@ -200,7 +200,7 @@ class Receipt {
 
                 if(preg_match('/(.*)  (-?\d+,\d{2}) (.{1})/', $this->expl_receipt[$lineNr], $match)) {
                     $lastPosition = new Position();
-                    $lastPosition->setName(trim($match[1]));
+                    $lastPosition->setName(explode('  ', trim($match[1]))[0]);
                     $lastPosition->setPriceTotal((float)str_replace(',', '.', $match[2]));
                     $lastPosition->setTaxCode($match[3]);
                 } elseif(preg_match('/     (\d{5,})/', $this->expl_receipt[$lineNr], $match)) {
