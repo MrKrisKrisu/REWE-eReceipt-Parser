@@ -1,97 +1,82 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace REWEParser;
+namespace K118\Receipt\REWE;
 
-use REWEParser\Exception\ReceiptParseException;
+use K118\Receipt\Format\Exception\ReceiptParseException;
+use K118\Receipt\Format\Models\Receipt;
 
-class Position {
+class Position implements \K118\Receipt\Format\Models\Position {
 
-    private $name;
-    private $priceTotal;
-    private $priceSingle;
-    private $taxCode;
+    private Receipt $receipt;
 
-    private $weight;
-    private $amount;
+    private string  $name;
+    private ?float  $priceTotal;
+    private ?float  $priceSingle;
+    private ?string $taxCode;
+    private ?float  $quantity;
 
-    /**
-     * The name of the product.
-     *
-     * @return string|NULL
-     */
-    public function getName(): ?string {
+    public function __construct(Receipt $receipt, string $name = null, float $priceTotal = null, float $priceSingle = null, string $taxCode = null, float $quantity = null) {
+        $this->receipt     = $receipt;
+        $this->name        = $name;
+        $this->priceTotal  = $priceTotal;
+        $this->priceSingle = $priceSingle;
+        $this->taxCode     = $taxCode;
+        $this->quantity    = $quantity;
+    }
+
+    public function getName(): string {
         return $this->name;
     }
 
     /**
-     * The total sum of the position
-     *
-     * @return float
-     * @throws ReceiptParseException
-     */
-    public function getPriceTotal(): float {
-        if($this->priceTotal !== null) {
-            return $this->priceTotal;
-        }
-        if($this->priceSingle !== null && $this->amount !== null) {
-            return $this->priceSingle * $this->amount;
-        }
-        if($this->priceSingle !== null && $this->weight !== null) {
-            return $this->priceSingle * $this->weight;
-        }
-        throw new ReceiptParseException();
-    }
-
-    /**
-     * The single value for one unit of the product
-     *
-     * @return float
-     * @throws ReceiptParseException
-     */
-    public function getPriceSingle(): float {
-        if($this->priceSingle !== null) {
-            return $this->priceSingle;
-        }
-        if($this->priceTotal !== null && $this->amount !== null) {
-            return $this->priceTotal / $this->amount;
-        }
-        if($this->priceTotal !== null && $this->weight !== null) {
-            return $this->priceTotal / $this->weight;
-        }
-        if($this->priceTotal !== null) {
-            return $this->priceTotal;
-        }
-        throw new ReceiptParseException();
-    }
-
-    /**
      * The Tax Code of the position (e.g. "A" or "B")
-     *
      * @return string|NULL
+     * @todo support tax amount
      */
     public function getTaxCode(): ?string {
         return $this->taxCode;
     }
 
-    /**
-     * The weight of the position (if the product is weightable)
-     *
-     * @return float|NULL
-     */
-    public function getWeight(): ?float {
-        return $this->weight;
+    public function getReceipt(): Receipt {
+        return $this->receipt;
     }
 
     /**
-     * The amount of the position (if the product is countable)
-     *
-     * @return int|NULL
+     * @throws ReceiptParseException
      */
-    public function getAmount(): ?int {
-        if($this->amount === null && $this->weight === null) {
-            return 1;
+    public function getSinglePrice(): float {
+        if($this->priceSingle !== null) {
+            return $this->priceSingle;
         }
-        return $this->amount;
+        if($this->priceTotal !== null && $this->quantity !== null) {
+            return $this->priceTotal / $this->quantity;
+        }
+        if($this->priceTotal !== null) {
+            return $this->priceTotal;
+        }
+        throw new ReceiptParseException();
+    }
+
+    public function getQuantity(): float {
+        return $this->quantity ?? 1.0;
+    }
+
+    /**
+     * @throws ReceiptParseException
+     */
+    public function getTotalPrice(): float {
+        if($this->priceTotal !== null) {
+            return $this->priceTotal;
+        }
+        if($this->priceSingle !== null && $this->quantity !== null) {
+            return $this->priceSingle * $this->quantity;
+        }
+        throw new ReceiptParseException();
+    }
+
+    public function getTax(): float {
+        // TODO: Implement getTax() method.
+        return -1;
     }
 
     public function setName(string $name): void {
@@ -110,12 +95,7 @@ class Position {
         $this->taxCode = $taxCode;
     }
 
-    public function setWeight(float $weight): void {
-        $this->weight = $weight;
+    public function setQuantity(float $quantity): void {
+        $this->quantity = $quantity;
     }
-
-    public function setAmount(int $amount): void {
-        $this->amount = $amount;
-    }
-
 }
