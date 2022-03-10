@@ -1,17 +1,18 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace REWEParser;
+namespace K118\Receipt\REWE;
 
 use Carbon\Carbon;
-use REWEParser\Exception\PositionNotFoundException;
-use REWEParser\Exception\ReceiptParseException;
+use K118\Receipt\Format\Exception\ReceiptParseException;
+use K118\Receipt\REWE\Exception\PositionNotFoundException;
+use K118\Receipt\Format\Models\Currency;
 
-class Receipt {
+class Receipt implements \K118\Receipt\Format\Models\Receipt {
 
     private string $raw_receipt;
-    private        $expl_receipt;
+    private array  $expl_receipt;
 
-    function __construct(string $raw_receipt) {
+    public function __construct(string $raw_receipt) {
         $this->raw_receipt  = $raw_receipt;
         $this->expl_receipt = explode("\n", $raw_receipt);
     }
@@ -28,12 +29,12 @@ class Receipt {
     }
 
     /**
-     * @return int
+     * @return string
      * @throws ReceiptParseException
      */
-    public function getBonNr(): int {
+    public function getId(): string {
         if(preg_match('/Bon-Nr.:(\d{1,4})/', $this->raw_receipt, $match)) {
-            return (int)$match[1];
+            return $match[1];
         }
         throw new ReceiptParseException();
     }
@@ -102,7 +103,7 @@ class Receipt {
      *
      * @return array
      */
-    public function getPaymentMethods(): array {
+    public function getPayments(): array {
         $paymentMethods = [];
         foreach(explode("\n", $this->raw_receipt) as $line) {
             if(preg_match('/Geg. (.*) *EUR/', $line, $match)) {
@@ -120,7 +121,7 @@ class Receipt {
     }
 
     public function hasPayedContactless(): bool {
-        return preg_match('/Kontaktlos/', $this->raw_receipt);
+        return str_contains($this->raw_receipt, "Kontaktlos");
     }
 
     /**
@@ -199,10 +200,12 @@ class Receipt {
                 }
 
                 if(preg_match('/(.*)  (-?\d+,\d{2}) (.{1})/', $this->expl_receipt[$lineNr], $match)) {
-                    $lastPosition = new Position();
-                    $lastPosition->setName(explode('  ', trim($match[1]))[0]);
-                    $lastPosition->setPriceTotal((float)str_replace(',', '.', $match[2]));
-                    $lastPosition->setTaxCode($match[3]);
+                    $lastPosition = new Position(
+                        receipt:    $this,
+                        name:       explode('  ', trim($match[1]))[0],
+                        priceTotal: (float)str_replace(',', '.', $match[2]),
+                        taxCode:    $match[3]
+                    );
                 } elseif(preg_match('/     (\d{5,})/', $this->expl_receipt[$lineNr], $match)) {
                     //This is a line with a coupon code or something similar.
                     //Should be skipped.
@@ -214,7 +217,7 @@ class Receipt {
             } elseif($this->isAmountLine($lineNr)) {
 
                 if(preg_match('/(-?\d+) Stk x *(-?\d+,\d{2})/', $this->expl_receipt[$lineNr], $match)) {
-                    $lastPosition->setAmount((int)$match[1]);
+                    $lastPosition->setQuantity((int)$match[1]);
                     $lastPosition->setPriceSingle((float)str_replace(',', '.', $match[2]));
                 } else {
                     throw new ReceiptParseException("Error while parsing Amount line");
@@ -223,10 +226,10 @@ class Receipt {
             } elseif($this->isWeightLine($lineNr)) {
 
                 if(preg_match('/(-?\d+,\d{3}) kg x *(-?\d+,\d{2}) EUR/', $this->expl_receipt[$lineNr], $match)) {
-                    $lastPosition->setWeight((float)str_replace(',', '.', $match[1]));
+                    $lastPosition->setQuantity((float)str_replace(',', '.', $match[1]));
                     $lastPosition->setPriceSingle((float)str_replace(',', '.', $match[2]));
                 } elseif(preg_match('/Handeingabe E-Bon *(-?\d+,\d{3}) kg/', $this->expl_receipt[$lineNr], $match)) {
-                    $lastPosition->setWeight((float)str_replace(',', '.', $match[1]));
+                    $lastPosition->setQuantity((float)str_replace(',', '.', $match[1]));
                 } else {
                     throw new ReceiptParseException("Error while parsing Weight line");
                 }
@@ -240,21 +243,25 @@ class Receipt {
             $positions[] = $lastPosition;
         }
 
-        if(count($positions) === 0) {
+        if(empty($positions)) {
             throw new ReceiptParseException("Cannot parse any products on receipt");
         }
         return $positions;
     }
 
     private function isWeightLine(int $lineNr): bool {
-        return strpos($this->expl_receipt[$lineNr], 'kg') !== false;
+        return str_contains($this->expl_receipt[$lineNr], 'kg');
     }
 
     private function isAmountLine(int $lineNr): bool {
-        return strpos($this->expl_receipt[$lineNr], ' Stk x') !== false;
+        return str_contains($this->expl_receipt[$lineNr], ' Stk x');
     }
 
     private function isProductLine(int $lineNr): bool {
         return !$this->isWeightLine($lineNr) && !$this->isAmountLine($lineNr);
+    }
+
+    public function getCurrency(): ?Currency {
+        return Currency::EUR;
     }
 }

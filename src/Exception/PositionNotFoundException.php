@@ -1,6 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace REWEParser\Exception;
+namespace K118\Receipt\REWE\Exception;
 
 use Exception;
 

@@ -1,34 +1,49 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace REWEParser;
+namespace K118\Receipt\REWE;
 
-class Shop {
+use K118\Receipt\Format\Models\Address;
+
+class Shop implements \K118\Receipt\Format\Models\Shop {
 
     private ?string $name;
-    private ?string $address;
-    private ?string $postalCode;
-    private ?string $city;
+    private Address $address;
 
-    public function __construct(string $name = null, string $address = null, string $postalCode = null, string $city = null) {
-        $this->name       = $name;
-        $this->address    = $address;
-        $this->postalCode = $postalCode;
-        $this->city       = $city;
+    public function __construct(
+        string $name = null,
+        string $street = null,
+        string $postalCode = null,
+        string $city = null
+    ) {
+        $this->name    = $name;
+        $this->address = new \K118\Receipt\REWE\Address($street, $postalCode, $city);
     }
 
     public function getName(): string {
         return $this->name;
     }
 
-    public function getAddress(): string {
+    public function getAddress(): Address {
         return $this->address;
     }
 
-    public function getPostalCode(): string {
-        return $this->postalCode;
+    public function getTaxNumber(): ?string {
+        // TODO: Implement getTaxNumber() method.
+        return null;
     }
 
-    public function getCity(): string {
-        return $this->city;
+    public function getPhone(): ?string {
+        // TODO: Implement getPhone() method.
+        return null;
+    }
+
+    public function getEmail(): ?string {
+        // TODO: Implement getEmail() method.
+        return null;
+    }
+
+    public function getFax(): ?string {
+        // TODO: Implement getFax() method.
+        return null;
     }
 }

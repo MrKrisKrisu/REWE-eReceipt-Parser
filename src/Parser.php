@@ -1,6 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace REWEParser;
+namespace K118\Receipt\REWE;
 
 use Spatie\PdfToText\Exceptions\PdfNotFound;
 use Spatie\PdfToText\Pdf;

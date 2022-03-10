@@ -1,8 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
-use REWEParser\Exception\ReceiptParseException;
-use REWEParser\Parser;
 use Spatie\PdfToText\Exceptions\PdfNotFound;
+use K118\Receipt\REWE\Parser;
+use K118\Receipt\Format\Exception\ReceiptParseException;
 
 require_once '../vendor/autoload.php';
 

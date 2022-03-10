@@ -10,13 +10,13 @@
     }
   ],
   "require": {
-    "php": "^7.4 || ^8.0",
+    "php": "^8.1",
     "spatie/pdf-to-text": "^1.3",
-    "nesbot/carbon": "^2.38"
+    "mrkriskrisu/ereceipt": "^0.1.0"
   },
   "autoload": {
     "psr-4": {
-      "REWEParser\\": "src/"
+      "K118\\Receipt\\REWE\\": "src/"
     }
   },
   "require-dev": {
